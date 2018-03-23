@@ -163,6 +163,28 @@ public class State {
 		nextPiece = randomPiece();
 
 	}
+
+	/**
+	 * Copy contructor
+	 */
+	public State(State s) {
+		this.lost = s.hasLost();
+		this.label = s.label;
+		this.turn = s.getTurnNumber();
+		this.cleared = s.getRowsCleared();
+
+		for(int i = 0 ; i < ROWS ; i ++) {
+			for(int j = 0 ; j < COLS ; j ++) {
+				this.field[i][j] = s.getField()[i][j];
+			}
+		}
+
+		for(int i = 0 ; i < COLS ; i ++) {
+			this.top[i] = s.getTop()[i];
+		}
+
+		this.nextPiece = s.getNextPiece();
+	}
 	
 	//random integer, returns 0-6
 	private int randomPiece() {

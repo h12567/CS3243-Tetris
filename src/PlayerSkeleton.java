@@ -1,10 +1,14 @@
 
 public class PlayerSkeleton {
+	private double paramLinesCleared = 100;
+	private double paramBlockage = 45;
+	private double paramAggregateHeight = 15;
+	private double paramBumpiness = 50;
 
 	//implement this function to have a working system
 	public int pickMove(State s, int[][] legalMoves) {
-		
-		return 0;
+		return Logic.getBestMove(s, legalMoves, paramBlockage, paramAggregateHeight,
+			paramBumpiness, paramLinesCleared);
 	}
 	
 	public static void main(String[] args) {
@@ -16,7 +20,7 @@ public class PlayerSkeleton {
 			s.draw();
 			s.drawNext(0,0);
 			try {
-				Thread.sleep(300);
+				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
