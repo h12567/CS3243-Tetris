@@ -12,8 +12,8 @@ public class Simulator {
     }
 
     public int pickMove(State s, int[][] legalMoves) {
-        return Logic.getBestMove(s, legalMoves, paramBlockage, paramAggregateHeight,
-            paramBumpiness, paramLinesCleared);
+        return Logic.getBestMove(s, legalMoves, blockageParam, heightParam,
+            bumpinessParam, clearedParam);
     }
 
     public int getScore() {

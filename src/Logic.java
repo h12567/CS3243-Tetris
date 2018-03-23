@@ -88,19 +88,14 @@ public class Logic {
             for(int i = 0 ; i < legalMoves.length ; i ++) {
                 threads[0].join();
 
-                System.out.println(helpers[i].value);
-
                 if(helpers[i].value < bestResult) {
                     bestResult = helpers[i].value;
                     bestMove = i;
                 }
             }
-            System.out.println("------------------");
         } catch (InterruptedException e) {
             System.out.println("WTF");
         }
-
-        System.out.printf("Move: %d\n", bestMove);
 
         return bestMove;
     }
