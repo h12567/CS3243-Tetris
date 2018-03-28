@@ -1,8 +1,10 @@
-public class Simulator {
+public class Simulator implements Runnable {
     private double blockageParam;
     private double heightParam;
     private double bumpinessParam;
     private double clearedParam;
+
+    private int scoreLah;
 
     public Simulator(double[] gene) {
         this.blockageParam = gene[0];
@@ -17,10 +19,19 @@ public class Simulator {
     }
 
     public int getScore() {
+        return scoreLah;
+    }
+
+    @Override
+    public void run() {
         State s = new State();
         while(!s.hasLost()) {
-            s.makeMove(pickMove(s,s.legalMoves()));
+            if (s.getTurnNumber() != -1 && s.getTurnNumber() < Config.TURN_NUMBER_LIMIT) {
+                s.makeMove(pickMove(s, s.legalMoves()));
+            } else {
+                break;
+            }
         }
-        return s.getRowsCleared();
+        scoreLah = s.getRowsCleared();
     }
 }
