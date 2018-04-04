@@ -13,17 +13,18 @@ public class Logic {
         private double heightParam;
         private double bumpinessParam;
         private double clearedParam;
+        private double towerParam;
 
-        public Helper(State s, int move, double blockageParam, double heightParam,
-                    double bumpinessParam, double clearedParam) {
+        public Helper(State s, int move, double[] gene) {
             this.initialState = new State(s);
             this.newState = new State(s);
             this.move = move;
 
-            this.blockageParam = blockageParam;
-            this.heightParam = heightParam;
-            this.bumpinessParam = bumpinessParam;
-            this.clearedParam = clearedParam;
+            this.blockageParam = gene[0];
+            this.heightParam = gene[1];
+            this.bumpinessParam = gene[2];
+            this.clearedParam = gene[3];
+            this.towerParam = gene[4];
 
             value = Integer.MAX_VALUE;
         }
@@ -35,6 +36,7 @@ public class Logic {
             double height = 0;
             double bumpiness = 0;
             double cleared = 0;
+            double tower = 0;
 
             for(int i = 0 ; i < s.ROWS ; i ++) {
                 for(int j = 0 ; j < s.COLS ; j ++) {
@@ -52,14 +54,21 @@ public class Logic {
             for(int i = 1 ; i < s.COLS ; i ++)
                 bumpiness += Math.abs(s.getTop()[i] - s.getTop()[i - 1]);
 
+            for(int i = 1 ; i < s.COLS ; i ++){
+                int dist = Math.abs(s.getTop()[i] - s.getTop()[i - 1]);
+                if(dist >= 5)
+                    tower += (int) dist;
+            }
+
             cleared = s.getRowsCleared() - initialState.getRowsCleared();
 
             blockage *= blockageParam;
             height *= heightParam;
             bumpiness *= bumpinessParam;
             cleared *= clearedParam;
+            tower *= towerParam;
 
-            value = blockage + height + bumpiness + cleared;
+            value = blockage + height + bumpiness + cleared + tower;
         }
 
         public void run() {
@@ -68,8 +77,7 @@ public class Logic {
         }
     }
 
-    public static int getBestMove(State s, int[][] legalMoves, double blockageParam, 
-                double heightParam, double bumpinessParam, double clearedParam) {
+    public static int getBestMove(State s, int[][] legalMoves, double[] gene) {
         int bestMove = 0;
         double bestResult = Integer.MAX_VALUE;
 
@@ -77,8 +85,7 @@ public class Logic {
         Thread threads[] = new Thread[legalMoves.length];
 
         for(int i = 0 ; i < legalMoves.length ; i ++) {
-            helpers[i] = new Helper(s, i, blockageParam, heightParam, 
-                bumpinessParam, clearedParam);
+            helpers[i] = new Helper(s, i, gene);
             threads[i] = new Thread(helpers[i]);
             threads[i].run();
         }

@@ -14,5 +14,5 @@ public class Config {
     public static final double MUTATION_AMOUNT = 0.2; // The max amount of mutation allowed
 
     // NOT A SETTING
-    public static final int NO_OF_FEATURES = 4;
+    public static final int NO_OF_FEATURES = 5;
 }

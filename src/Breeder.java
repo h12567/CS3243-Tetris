@@ -142,11 +142,11 @@ public class Breeder {
     public void writeLah(int generation) throws IOException {
         // Log writer
         FileWriter fileWriter = new FileWriter(
-                "log\\log" + String.format("%03d", generation) + ".txt", false);
+                "log/log" + String.format("%03d", generation) + ".txt", false);
         PrintWriter printWriter = new PrintWriter(fileWriter);
 
         // Result writer
-        FileWriter resultWriter = new FileWriter("log\\log.txt", true);
+        FileWriter resultWriter = new FileWriter("log/log.txt", true);
         PrintWriter resultPrintWriter = new PrintWriter(resultWriter);
 
         // Gene writer
@@ -157,10 +157,14 @@ public class Breeder {
 
         double average = 0.0;
         for (int i = 0; i < Config.POPULATION; i++) {
-            printWriter.print(fitnessScores[i] + "," + oldGenes[i][0] + ","
-                    + oldGenes[i][1] + "," + oldGenes[i][2] + "," + oldGenes[i][3] + "\n");
-            genePrintWriter.print(newGenes[i][0] + " " + newGenes[i][1] + " " + newGenes[i][2] + " "
-                    + newGenes[i][3] + "\n");
+            printWriter.print(fitnessScores[i]);
+            for(int j = 0 ; j < Config.NO_OF_FEATURES ; j++) {
+                printWriter.print("," + oldGenes[i][j]);
+                genePrintWriter.print(newGenes[i][j] + " ");
+            }
+
+            printWriter.print("\n");
+            genePrintWriter.print("\n");
             average += fitnessScores[i];
         }
 

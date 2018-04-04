@@ -3,19 +3,18 @@ public class Simulator implements Runnable {
     private double heightParam;
     private double bumpinessParam;
     private double clearedParam;
+    private double towerParam;
+
+    private double[] gene;
 
     private int scoreLah;
 
     public Simulator(double[] gene) {
-        this.blockageParam = gene[0];
-        this.heightParam = gene[1];
-        this.bumpinessParam = gene[2];
-        this.clearedParam = gene[3];
+        this.gene = gene;
     }
 
     public int pickMove(State s, int[][] legalMoves) {
-        return Logic.getBestMove(s, legalMoves, blockageParam, heightParam,
-            bumpinessParam, clearedParam);
+        return Logic.getBestMove(s, legalMoves, gene);
     }
 
     public int getScore() {
