@@ -3,7 +3,7 @@ import java.util.Arrays;
 
 public class Test {
     public static double GENE_MAX_VALUE = 1000;
-    public static int GENE_LENGTH = 5;
+    public static int GENE_LENGTH = 6;
 
     public static class Gene implements Comparable<Gene> {
         public double[] gene;

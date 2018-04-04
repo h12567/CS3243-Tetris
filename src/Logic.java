@@ -14,6 +14,7 @@ public class Logic {
         private double bumpinessParam;
         private double clearedParam;
         private double towerParam;
+        private double holeParam;
 
         public Helper(State s, int move, double[] gene) {
             this.initialState = new State(s);
@@ -25,6 +26,7 @@ public class Logic {
             this.bumpinessParam = gene[2];
             this.clearedParam = gene[3];
             this.towerParam = gene[4];
+            this.holeParam = gene[5];
 
             value = Integer.MAX_VALUE;
         }
@@ -37,12 +39,14 @@ public class Logic {
             double bumpiness = 0;
             double cleared = 0;
             double tower = 0;
+            double hole = 0;
 
             for(int i = 0 ; i < s.ROWS ; i ++) {
                 for(int j = 0 ; j < s.COLS ; j ++) {
                     if(i >= s.getTop()[j]) continue;
                     if(s.getField()[i][j] == 0) {
                         blockage += s.getTop()[j] - i;
+                        hole += 1;
                     }
                 }
             }
@@ -67,8 +71,9 @@ public class Logic {
             bumpiness *= bumpinessParam;
             cleared *= clearedParam;
             tower *= towerParam;
+            hole *= holeParam;
 
-            value = blockage + height + bumpiness + cleared + tower;
+            value = blockage + height + bumpiness + cleared + tower + hole;
         }
 
         public void run() {
