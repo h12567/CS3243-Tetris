@@ -82,8 +82,7 @@ public class Breeder {
         } else {
             for (int c = 0; c < Config.NO_OF_FEATURES; c++) {
                 newGenes[k][c] =
-                        (firstGene[c] * firstFitnessScore + secondGene[c] * secondFitnessScore)
-                                / (firstFitnessScore + secondFitnessScore);
+                        (firstGene[c] * firstFitnessScore + secondGene[c] * secondFitnessScore);
                 if (Double.isNaN(newGenes[k][c])) {
                     System.out.println("FUCK");
                 }
@@ -107,7 +106,7 @@ public class Breeder {
      */
     private void mutate() {
         Random random = new Random();
-        for (int i = 0; i < Config.POPULATION; i++) {
+        for (int i = Config.POPULATION - 1; i > Config.POPULATION - Config.POPULATION * Config.KILLOFF_RATE; i--) {
             if (random.nextDouble() < Config.MUTATTION_RATE) {
                 for (int j = 0; j < Config.NO_OF_FEATURES; j++) {
                     newGenes[i][j] += -Config.MUTATION_AMOUNT + 2 * Config.MUTATION_AMOUNT * random
@@ -153,14 +152,17 @@ public class Breeder {
         FileWriter geneWriter = new FileWriter("genes.txt", false);
         PrintWriter genePrintWriter = new PrintWriter(geneWriter);
 
-        printWriter.print("Score,Blockage,Height,Bumpiness,ClearedLines\n");
+        printWriter.print("Score,Blockage,Height,Bumpiness,ClearedLines,Tower,Hole\n");
 
         double average = 0.0;
         for (int i = 0; i < Config.POPULATION; i++) {
-            printWriter.print(fitnessScores[i] + "," + oldGenes[i][0] + ","
-                    + oldGenes[i][1] + "," + oldGenes[i][2] + "," + oldGenes[i][3] + "\n");
-            genePrintWriter.print(newGenes[i][0] + " " + newGenes[i][1] + " " + newGenes[i][2] + " "
-                    + newGenes[i][3] + "\n");
+            printWriter.print(fitnessScores[i]);
+            for (int j = 0; j < Config.NO_OF_FEATURES; j++) {
+                printWriter.print("," + oldGenes[i][j]);
+                genePrintWriter.print(newGenes[i][j] + " ");
+            }
+            printWriter.print("\n");
+            genePrintWriter.print("\n");
             average += fitnessScores[i];
         }
 
