@@ -94,8 +94,8 @@ public class Test {
 
             for(int i = 0 ; i < GENE_NUMBER * tries ; i++ ) {
                 threads[i].join();
-                if(genes[i/tries].score < sim[i].score)
-                    genes[i/tries].score = sim[i].score;
+                if(genes[i/tries].score < sim[i].getScore())
+                    genes[i/tries].score = sim[i].getScore();
             }
 
             Arrays.sort(genes);
