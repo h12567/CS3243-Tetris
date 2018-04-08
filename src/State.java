@@ -11,9 +11,10 @@ public class State {
 	
 
 	public boolean lost = false;
-	
-	
-	
+
+	public int stateNumber = 0;
+
+	public int[] sequence;
 
 	
 	public TLabel label;
@@ -159,8 +160,9 @@ public class State {
 	
 	
 	//constructor
-	public State() {
-		nextPiece = randomPiece();
+	public State(int[] seq) {
+		this.sequence = seq;
+		nextPiece = sequence[stateNumber];
 
 	}
 
@@ -183,6 +185,8 @@ public class State {
 			this.top[i] = s.getTop()[i];
 		}
 
+		this.sequence = s.sequence;
+		this.stateNumber = s.stateNumber;
 		this.nextPiece = s.getNextPiece();
 	}
 	
@@ -272,10 +276,9 @@ public class State {
 	
 
 		//pick a new piece
-		nextPiece = randomPiece();
-		
+		stateNumber++;
+		nextPiece = sequence[stateNumber];
 
-		
 		return true;
 	}
 	

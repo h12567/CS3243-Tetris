@@ -3,9 +3,11 @@ public class Simulator implements Runnable {
     private double[] gene;
 
     private int scoreLah;
+    private int[] sequence;
 
-    public Simulator(double[] gene) {
+    public Simulator(double[] gene, int[] seq) {
         this.gene = gene;
+        this.sequence = seq;
     }
 
     public int pickMove(State s, int[][] legalMoves) {
@@ -18,7 +20,7 @@ public class Simulator implements Runnable {
 
     @Override
     public void run() {
-        State s = new State();
+        State s = new State(sequence);
         while (!s.hasLost()) {
             if (s.getTurnNumber() == -1
                     || (s.getTurnNumber() != -1 && s.getTurnNumber() < Config.TURN_NUMBER_LIMIT)) {

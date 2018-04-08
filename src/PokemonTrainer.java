@@ -44,6 +44,26 @@ public class PokemonTrainer {
 	}
 
 	public static void main(String[] args) throws IOException {
+
+    	int[] sequence = null;
+		File file = new File(Config.TRAINING_SEQUENCE);
+		Scanner sc = null;
+
+		try {
+			sc = new Scanner(file);
+			int N = sc.nextInt();
+			sequence = new int[N];
+			for (int i = 0; i < N; i++) {
+				sequence[i] = sc.nextInt();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (sc != null) {
+				sc.close();
+			}
+		}
+
 		// Generate genes
 		double[][] genes = generateGenes(Config.NEW_TRAINING_SESSION, Config.POPULATION);
 
@@ -73,7 +93,7 @@ public class PokemonTrainer {
 					 * visibility unless you want to kill your pc
 					 */
 					for (int i = 0; i < Config.NO_OF_THREADS; i++) {
-						myRunnables[i] = new Simulator(genes[Config.NO_OF_THREADS * z + i]);
+						myRunnables[i] = new Simulator(genes[Config.NO_OF_THREADS * z + i], sequence);
 						threads[i] = new Thread(myRunnables[i]);
 						threads[i].start();
 					}
