@@ -2,7 +2,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
@@ -114,7 +113,8 @@ public class PokemonTrainer {
             System.out.println("Generation " + g + " finished");
 
             Arrays.sort(fitnessScores);
-            if (g >= Config.RAGE_QUIT_CUTOFF_GENERATION && fitnessScores[3 * Config.POPULATION / 4]
+            if (Config.RAGE_QUIT && g >= Config.RAGE_QUIT_CUTOFF_GENERATION
+                    && fitnessScores[3 * Config.POPULATION / 4]
                     < Config.RAGE_QUIT_CUTOFF_RATE * 0.4 * Config.TURN_NUMBER_LIMIT
                     * Config.TESTS_PER_GENERATION) {
                 System.out.println("Third quartile fitness too low: " + fitnessScores[3 * Config.POPULATION / 4] + ". RAGE QUIT!!!!!!");

@@ -7,6 +7,9 @@ public class Config {
     public static final int NO_OF_THREADS = 500;        // MUST DIVIDE POPULATION!
     public static final boolean NEW_TRAINING_SESSION = true;
     public static final int STARTING_GENERATION = 0;
+
+    // RAGEQUIT
+    public static final boolean RAGE_QUIT = true;
     public static final double RAGE_QUIT_CUTOFF_RATE = 0.8;
     public static final double RAGE_QUIT_CUTOFF_GENERATION = 4;
 
