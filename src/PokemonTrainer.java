@@ -117,7 +117,7 @@ public class PokemonTrainer {
             if (g >= Config.RAGE_QUIT_CUTOFF_GENERATION && fitnessScores[3 * Config.POPULATION / 4]
                     < Config.RAGE_QUIT_CUTOFF_RATE * 0.4 * Config.TURN_NUMBER_LIMIT
                     * Config.TESTS_PER_GENERATION) {
-                System.out.println("Best fitness is too low: " + fitnessScores[Config.POPULATION - 1] + ". RAGE QUIT!!!!!!");
+                System.out.println("Third quartile fitness too low: " + fitnessScores[3 * Config.POPULATION / 4] + ". RAGE QUIT!!!!!!");
                 FileWriter resultWriter = new FileWriter("log\\log.txt", false);
                 resultWriter.close();
                 g = -1;

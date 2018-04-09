@@ -1,14 +1,14 @@
 public class Config {
     // GAME SETTINGS
-    public static final int POPULATION = 50;
-    public static final int NUMBER_OF_GENERATIONS = 100;
-    public static final int TURN_NUMBER_LIMIT = 500;    // Set to -1 for unlimited
+    public static final int POPULATION = 500;
+    public static final int NUMBER_OF_GENERATIONS = 1000;
+    public static final int TURN_NUMBER_LIMIT = 750;    // Set to -1 for unlimited
     public static final int TESTS_PER_GENERATION = 10;
-    public static final int NO_OF_THREADS = 50;        // MUST DIVIDE POPULATION!
+    public static final int NO_OF_THREADS = 500;        // MUST DIVIDE POPULATION!
     public static final boolean NEW_TRAINING_SESSION = true;
     public static final int STARTING_GENERATION = 0;
-    public static final double RAGE_QUIT_CUTOFF_RATE = 0.85;
-    public static final double RAGE_QUIT_CUTOFF_GENERATION = 10;
+    public static final double RAGE_QUIT_CUTOFF_RATE = 0.8;
+    public static final double RAGE_QUIT_CUTOFF_GENERATION = 4;
 
     // BREEDER SETTINGS
     public static final double SELECTION_RATE = 0.1;  // Two best genes from SELECTION_RATE * POP will be chosen to cross over

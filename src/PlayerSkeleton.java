@@ -1,8 +1,7 @@
 
 public class PlayerSkeleton {
 
-    private double[] gene = {0.06545828543097637, 0.5753446174725069, 0.15964887748502163,
-            -0.3896014639203992, 0.6981523610521604, 0};
+    private double[] gene = {0.020190489761746446,0.7423381913282154,0.17585888424444573,0.3673348427215299,0.5117384285909233,0.14418356590497608};
 
     //implement this function to have a working system
     public int pickMove(State s, int[][] legalMoves) {
