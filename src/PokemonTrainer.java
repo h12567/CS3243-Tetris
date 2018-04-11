@@ -17,16 +17,17 @@ public class PokemonTrainer {
 			for (int i = 0; i < population; i++) {
 				// Generate a random vector with elements in the range [-1;1]
 				for (int j = 0; j < Config.NO_OF_FEATURES; j++) {
-					genes[i][j] = -1 + 2 * random.nextDouble();
+					genes[i][j] = -0.5 + random.nextDouble();
+					// System.out.println(genes[i][j]);
 				}
 				// Normalize the vector
-				double temp = 0.0;
-				for (int j = 0; j < Config.NO_OF_FEATURES; j++) {
-					temp += genes[i][j] * genes[i][j];
-				}
-				for (int j = 0; j < Config.NO_OF_FEATURES; j++) {
-					genes[i][j] /= temp;
-				}
+				// double temp = 0.0;
+				// for (int j = 0; j < Config.NO_OF_FEATURES; j++) {
+				// 	temp += genes[i][j] * genes[i][j];
+				// }
+				// for (int j = 0; j < Config.NO_OF_FEATURES; j++) {
+				// 	genes[i][j] /= temp;
+				// }
 			}
 		} else {
 			// If not first generation, get data from "genes.txt"

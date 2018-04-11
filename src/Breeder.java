@@ -2,26 +2,29 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Random;
 
 public class Breeder {
 
-    private static int NUMBER_NEED_TO_KILL_OFF = (int) (Config.KILLOFF_RATE * Config.POPULATION);
+    private static int NUMBER_TO_DO_CROSSOVER = (int) (Config.CROSSOVER_AMOUNT * Config.POPULATION);
+    private static int NUMBER_TO_DO_MUTATION = (int) (Config.MUTATION_AMOUNT * Config.POPULATION);
 
     private Gene[] genesArray;
     private double[][] oldGenes;
     private int[] fitnessScores;
 
     private double[][] newGenes;
+    private ArrayList< Gene > newPopulation = new ArrayList< Gene > ();
+    Random rand = new Random();
 
     Breeder(Gene[] genesArray) {
         initialize(genesArray);
-        crossOver();
-        killOff();
-        mutate();
-        normalize();
+        expandByCrossOver();
+        expandByMutation();
+        reducePopulation();
     }
 
     private void initialize(Gene[] genesArray) {
@@ -35,104 +38,104 @@ public class Breeder {
         for (int i = 0; i < Config.POPULATION; i++) {
             this.oldGenes[i] = this.genesArray[i].dna;
             this.fitnessScores[i] = this.genesArray[i].fitness;
+            this.newPopulation.add(this.genesArray[i]);
         }
     }
 
     /**
      * Select randomly a fraction of the Config.POPULATION, get the two best genes, cross over until we have the required number of children
      */
-    private void crossOver() {
+    private void expandByCrossOver() {
 
-        for (int i = 0; i < NUMBER_NEED_TO_KILL_OFF; i++) {
-            LinkedList<Gene> selectedGenes = new LinkedList<Gene>();
+        for (int i = 0; i < NUMBER_TO_DO_CROSSOVER; i++) {
 
-            // Shuffle the old genes set to get the most random results
-            LinkedList<Gene> oldGenesSet = new LinkedList<Gene>(Arrays.asList(genesArray));
-            Collections.shuffle(oldGenesSet);
+            int firstIndex = rand.nextInt(Config.POPULATION);
+            int secondIndex = rand.nextInt(Config.POPULATION);
 
-            // Get the number of selections required by popping out the old genes set
-            while (selectedGenes.size() <= Config.SELECTION_RATE * Config.POPULATION) {
-                selectedGenes.add(oldGenesSet.pop());
+            if(firstIndex != secondIndex) {
+                newPopulation.add(crossOver(genesArray[firstIndex], genesArray[secondIndex]));
             }
-
-            // Sort it to get the best two genes
-            selectedGenes.sort(null);
-
-            // Cross over, write to newGenes[POPUPATION - 1 - i]
-            crossOver(selectedGenes.pop(), selectedGenes.pop(), Config.POPULATION - 1 - i);
         }
     }
 
 
+    private void expandByMutation() {
+        for (int i = 0; i < NUMBER_TO_DO_MUTATION; i++) {
+            int index = rand.nextInt(newPopulation.size());
+            int mutateLocation = rand.nextInt(Config.NO_OF_FEATURES);
+
+            Collections.shuffle(newPopulation);
+            newPopulation.add(mutate(newPopulation.get(index), mutateLocation));
+        }
+    }
+
+    private void reducePopulation() {
+        Collections.sort(newPopulation);
+        while(newPopulation.size() > Config.POPULATION) {
+            newPopulation.remove(newPopulation.size() - 1);
+        }
+    }
     /**
      * Cross two genses. Take the indices from the oldGenes array and write the child to the newGenes array.
      * Cross genes by getting the weighted average of each feature with the weights being the fitness score of each gene.
      *
      * @param k index of child gene
      */
-    private void crossOver(Gene first, Gene second, int k) {
+    private Gene crossOver(Gene first, Gene second) {
         double[] firstGene = first.dna;
         double[] secondGene = second.dna;
-        int firstFitnessScore = first.fitness;
-        int secondFitnessScore = second.fitness;
+        double[] childGene = new double[Config.NO_OF_FEATURES];
+        double next;
 
-        // If the parents are too damn weak, just select one
-        if (first.fitness == 0 && second.fitness == 0) {
-            newGenes[k] = firstGene;
-        } else {
-            for (int c = 0; c < Config.NO_OF_FEATURES; c++) {
-                newGenes[k][c] =
-                        (firstGene[c] * firstFitnessScore + secondGene[c] * secondFitnessScore);
-                if (Double.isNaN(newGenes[k][c])) {
-                    System.out.println("FUCK");
-                }
+        for (int c = 0; c < Config.NO_OF_FEATURES; c++) {
+            next = rand.nextDouble();
+
+            if(next <= Config.CROSSOVER_RATE) {
+                childGene[c] = firstGene[c];
+            } else {
+                childGene[c] = secondGene[c];
+            }
+
+
+            if (Double.isNaN(childGene[c])) {
+                System.out.println("FUCK");
             }
         }
+
+
+        Simulator simulator = new Simulator(childGene);
+        simulator.run();
+        return new Gene(childGene, simulator.getScore());
+    
     }
 
 
-    /**
-     * Kill off the worst performed genes
-     */
-    private void killOff() {
-        // Can just do a simple loop because oldGenes is sorted
-        for (int i = 0; i < Config.POPULATION - NUMBER_NEED_TO_KILL_OFF; i++) {
-            newGenes[i] = oldGenes[i];
-        }
+
+    private boolean flipCoin() {
+        return rand.nextInt(2) == 0;
     }
+
 
     /**
      * Allowing mutation with a given probability. Mutate by adding/substracting randomly an amount in the given range
      */
-    private void mutate() {
-        Random random = new Random();
-        for (int i = Config.POPULATION - 1; i > Config.POPULATION - Config.POPULATION * Config.KILLOFF_RATE; i--) {
-            if (random.nextDouble() < Config.MUTATTION_RATE) {
-                for (int j = 0; j < Config.NO_OF_FEATURES; j++) {
-                    newGenes[i][j] += -Config.MUTATION_AMOUNT + 2 * Config.MUTATION_AMOUNT * random
-                            .nextDouble();
-                    if (Double.isNaN(newGenes[i][j])) {
-                        System.out.println("FUCK");
-                    }
-                }
-            }
-        }
-    }
+    private Gene mutate(Gene gene, int mutateLocation) {
+        double[] parentGene = gene.dna;
+        double[] childGene = new double[Config.NO_OF_FEATURES];
+        System.arraycopy( parentGene, 0, childGene, 0, parentGene.length );
 
-    /**
-     * Normalize all vectors
-     */
-    private void normalize() {
-        for (int i = 0; i < Config.POPULATION; i++) {
-            double temp = 0.0;
-            for (int j = 0; j < Config.NO_OF_FEATURES; j++) {
-                temp += newGenes[i][j] * newGenes[i][j];
-            }
-            temp = Math.sqrt(temp);
-            for (int j = 0; j < Config.NO_OF_FEATURES; j++) {
-                newGenes[i][j] = newGenes[i][j] / temp;
+        double next = rand.nextDouble();
+        if(next < Config.MUTATION_RATE) {
+            if(flipCoin()) {
+                childGene[mutateLocation] += rand.nextDouble() * 2;
+            } else {
+                childGene[mutateLocation] -= rand.nextDouble() * 2;
             }
         }
+
+        Simulator simulator = new Simulator(childGene);
+        simulator.run();
+        return new Gene(childGene, simulator.getScore());
     }
 
     /**
@@ -172,6 +175,7 @@ public class Breeder {
             resultPrintWriter.print("Generation,Mean,Best,ThirdQuartile,Median,FirstQuartile,Worst\n");
         }
 
+        System.out.println("AVG SCORE " + average);
         resultPrintWriter
                 .print(generation + "," + average + "," + fitnessScores[0] + "," + fitnessScores[
                         Config.POPULATION / 4] + "," + fitnessScores[Config.POPULATION / 2] + ","
@@ -189,6 +193,12 @@ public class Breeder {
     }
 
     public double[][] getGenes() {
+        Gene currentGene;
+        for(int i = 0; i < Config.POPULATION; i++) {
+            currentGene = newPopulation.get(i);
+            newGenes[i] = currentGene.dna;
+            fitnessScores[i] = currentGene.fitness;
+        }
         return newGenes;
     }
 }
