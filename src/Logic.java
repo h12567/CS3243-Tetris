@@ -24,8 +24,6 @@ public class Logic {
             this.heightParam = gene[1];
             this.bumpinessParam = gene[2];
             this.clearedParam = gene[3];
-            this.towerParam = gene[4];
-            this.holeParam = gene[5];
 
             value = Integer.MAX_VALUE;
         }
@@ -39,8 +37,6 @@ public class Logic {
             double height = 0;
             double bumpiness = 0;
             double cleared = 0;
-            double tower = 0;
-            double hole = 0;
 
             for (int i = 0; i < s.ROWS; i++) {
                 for (int j = 0; j < s.COLS; j++) {
@@ -49,7 +45,6 @@ public class Logic {
                     }
                     if (s.getField()[i][j] == 0) {
                         blockage += s.getTop()[j] - i;
-                        hole += 1;
                     }
                 }
             }
@@ -61,9 +56,6 @@ public class Logic {
             for (int i = 1; i < s.COLS; i++) {
                 int dist = Math.abs(s.getTop()[i] - s.getTop()[i - 1]);
                 bumpiness += dist;
-                if (dist >= 5) {
-                    tower += dist;
-                }
             }
 
             cleared = s.getRowsCleared() - initialState.getRowsCleared();
@@ -72,10 +64,8 @@ public class Logic {
             height *= heightParam;
             bumpiness *= bumpinessParam;
             cleared *= clearedParam;
-            tower *= towerParam;
-            hole *= holeParam;
 
-            value = blockage + height + bumpiness + cleared + tower + hole;
+            value = blockage + height + bumpiness + cleared;
         }
 
         public void run() {

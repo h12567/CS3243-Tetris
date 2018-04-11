@@ -141,11 +141,11 @@ public class Breeder {
     public void writeLah(int generation) throws IOException {
         // Log writer
         FileWriter fileWriter = new FileWriter(
-                "log\\log" + String.format("%03d", generation) + ".txt", false);
+                "log/log" + String.format("%03d", generation) + ".txt", false);
         PrintWriter printWriter = new PrintWriter(fileWriter);
 
         // Result writer
-        FileWriter resultWriter = new FileWriter("log\\log.txt", true);
+        FileWriter resultWriter = new FileWriter("log/log.txt", true);
         PrintWriter resultPrintWriter = new PrintWriter(resultWriter);
 
         // Gene writer

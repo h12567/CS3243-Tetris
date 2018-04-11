@@ -111,14 +111,16 @@ public class PokemonTrainer {
             breeder.writeLah(g);
 
             System.out.println("Generation " + g + " finished");
-
             Arrays.sort(fitnessScores);
+
+            System.out.println(fitnessScores[0] + "," + fitnessScores[Config.POPULATION / 4] + ","
+                    + fitnessScores[Config.POPULATION / 2] + "," + fitnessScores[
+                    3 * Config.POPULATION / 4] + "," + fitnessScores[Config.POPULATION - 1]);
             if (Config.RAGE_QUIT && g >= Config.RAGE_QUIT_CUTOFF_GENERATION
                     && fitnessScores[3 * Config.POPULATION / 4]
-                    < Config.RAGE_QUIT_CUTOFF_RATE * 0.4 * Config.TURN_NUMBER_LIMIT
-                    * Config.TESTS_PER_GENERATION) {
+                    < Config.RAGE_QUIT_CUTOFF_LINES_PER_GAME) {
                 System.out.println("Third quartile fitness too low: " + fitnessScores[3 * Config.POPULATION / 4] + ". RAGE QUIT!!!!!!");
-                FileWriter resultWriter = new FileWriter("log\\log.txt", false);
+                FileWriter resultWriter = new FileWriter("log/log.txt", false);
                 resultWriter.close();
                 g = -1;
                 genes = generateGenes(Config.NEW_TRAINING_SESSION, Config.POPULATION);
