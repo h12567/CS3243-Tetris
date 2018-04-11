@@ -6,6 +6,8 @@ import java.util.Scanner;
 
 public class PokemonTrainer {
 
+	public static Random rand = new Random();
+    
     private static double[][] generateGenes(boolean firstGen, int population)
             throws FileNotFoundException {
 
@@ -17,18 +19,11 @@ public class PokemonTrainer {
 			for (int i = 0; i < population; i++) {
 				// Generate a random vector with elements in the range [-1;1]
 				for (int j = 0; j < Config.NO_OF_FEATURES; j++) {
-					genes[i][j] = -0.5 + random.nextDouble();
-					// System.out.println(genes[i][j]);
+					// genes[i][j] = Math.abs(rand.nextDouble() * 10) * Config.FEATURE_TYPE[j];
+					genes[i][j] = rand.nextDouble() - 0.5;
 				}
-				// Normalize the vector
-				// double temp = 0.0;
-				// for (int j = 0; j < Config.NO_OF_FEATURES; j++) {
-				// 	temp += genes[i][j] * genes[i][j];
-				// }
-				// for (int j = 0; j < Config.NO_OF_FEATURES; j++) {
-				// 	genes[i][j] /= temp;
-				// }
 			}
+
 		} else {
 			// If not first generation, get data from "genes.txt"
 			Scanner scan;
