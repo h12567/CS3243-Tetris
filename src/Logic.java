@@ -36,9 +36,12 @@ public class Logic {
             return aggregateHeight;
         }
     
-        public int getNumHoles() {
+        public double getNumHoles(State s) {
+            int[][] field = s.getField();
+            int[] top = s.getTop();
+
             int numHoles = 0;
-            for (int j = 0;  j < COLS;  j++) {
+            for (int j = 0;  j < State.COLS;  j++) {
                 if (top[j] != 0) {
                     for (int i = top[j] - 1;  i >= 0;  i--) {
                         if (field[i][j] == 0) {
@@ -47,15 +50,15 @@ public class Logic {
                     }
                 }
             }
-            return numHoles * 10;
+            return (double) numHoles * 10;
         }
 
-        public int getRowTransitions() {
+        public double getRowTransitions(State s) {
+            int[][] field = s.getField();
             int rowTransitions = 0;
             int lastCell = 1;
-            cleanField();
-            for (int i = 0;  i < ROWS;  i++) {
-                for (int j = 0;  j < COLS;  j++) {
+            for (int i = 0;  i < State.ROWS;  i++) {
+                for (int j = 0;  j < State.COLS;  j++) {
                     if ((field[i][j] == 0) != (lastCell == 0)) {
                         rowTransitions++;
                     }
@@ -63,13 +66,14 @@ public class Logic {
                 }
                 if (lastCell == 0) rowTransitions++;
             }
-            return rowTransitions;
+            return (double) rowTransitions;
         }
 
-        public int getColTransitions() {
+        public double getColTransitions(State s) {
+            int[][] field = s.getField();
+            int[] top = s.getTop();
             int colTransitions = 0;
-            cleanField();
-            for (int j = 0;  j < COLS;  j++) {
+            for (int j = 0;  j < State.COLS;  j++) {
                 for (int i = top[j] - 2;  i >= 0;  i--) {
                     if ((field[i][j] == 0) != (field[i + 1][j] == 0)) {
                         colTransitions++;
@@ -77,7 +81,7 @@ public class Logic {
                 }
                 if (field[0][j] == 0 && top[j] > 0) colTransitions++;
             }
-            return colTransitions;
+            return (double) colTransitions;
         }
         
         public int getBumpiness() {
@@ -96,14 +100,15 @@ public class Logic {
             return highestCol;
         }
 
-        public int getWellSum() {
-            int next, prev, wellSum = 0;
-            cleanField();
-            for (int j = 0;  j < COLS;  j++) {
-                for (int i = ROWS - 1;  i >= 0;  i--) {
+        public double getWellSum(State s) {
+            int[][] field = s.getField();
+            int[] top = s.getTop();
+            int wellSum = 0;
+            for (int j = 0;  j < State.COLS;  j++) {
+                for (int i = State.ROWS -1;  i >= 0;  i--) {
                     if (field[i][j] == 0) {
                         if (j == 0 || field[i][j - 1] != 0) {
-                            if (j == COLS - 1 || field[i][j + 1] != 0) {
+                            if (j == State.COLS - 1 || field[i][j + 1] != 0) {
                                 int wellHeight = i - top[j] + 1;
                                 wellSum += wellHeight * (wellHeight + 1) / 2;
                             }
@@ -121,14 +126,13 @@ public class Logic {
             this.newState = new State(s);
             this.move = move;
 
-            this.holeParam = gene[0];
+            this.holeParam = gene[3];
             this.rowTransitionParam = gene[1];
             this.columnTransitionParam = gene[2];
-            this.highestColParam = gene[3];
             this.wellParam = gene[4];
-            this.clearedParam = gene[5];
+            this.clearedParam = gene[0];
 
-            value = Integer.MAX_VALUE;
+            value = Integer.MIN_VALUE;
         }
 
 
@@ -140,21 +144,19 @@ public class Logic {
             top = s.getTop();
             field = s.getField();
 
-            double hole = getNumHoles();
-            double rowTransition = getRowTransitions();
-            double columnTransition = getColTransitions();
-            double highestCol = getHighestColumn();
-            double well = getWellSum();
-            double cleared = s.getRowsCleared() - initialState.getRowsCleared();
+            double hole = getNumHoles(s);
+            double rowTransition = getRowTransitions(s);
+            double columnTransition = getColTransitions(s);
+            double well = getWellSum(s);
+            double cleared = s.getRowsCleared();
 
             cleared *= clearedParam;
             hole *= holeParam;
             rowTransition *= rowTransitionParam;
             columnTransition *= columnTransitionParam;
-            highestCol *= highestColParam;
             well *= wellParam;
 
-            value = cleared + hole + rowTransition + columnTransition + highestCol + well;
+            value = cleared + hole + rowTransition + columnTransition + well;
         }
 
         public void run() {
@@ -165,7 +167,7 @@ public class Logic {
 
     public static int getBestMove(State s, int[][] legalMoves, double[] gene) {
         int bestMove = 0;
-        double bestResult = Integer.MAX_VALUE;
+        double bestResult = Integer.MIN_VALUE;
 
         Helper helpers[] = new Helper[legalMoves.length];
         Thread threads[] = new Thread[legalMoves.length];
@@ -178,9 +180,9 @@ public class Logic {
 
         try {
             for (int i = 0; i < legalMoves.length; i++) {
-                threads[0].join();
+                threads[i].join();
 
-                if (helpers[i].value < bestResult) {
+                if (helpers[i].value > bestResult) {
                     bestResult = helpers[i].value;
                     bestMove = i;
                 }

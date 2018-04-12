@@ -18,9 +18,9 @@ public class PokemonTrainer {
 			Random random = new Random();
 			for (int i = 0; i < population; i++) {
 				// Generate a random vector with elements in the range [-1;1]
-				for (int j = 0; j < Config.NO_OF_FEATURES; j++) {
-					// genes[i][j] = Math.abs(rand.nextDouble() * 10) * Config.FEATURE_TYPE[j];
-					genes[i][j] = rand.nextDouble() - 0.5;
+				for (int j = 0; j < Config.NO_OF_FEATURES; j++) {																																						
+					genes[i][j] = Math.abs(rand.nextDouble()) * 10 * Config.FEATURE_TYPE[j];
+					// genes[i][j] = rand.nextDouble() - 0.5;
 				}
 			}
 
