@@ -1,0 +1,5 @@
+Generation,Mean,Best,ThirdQuartile,Median,FirstQuartile,Worst
+0,312.42,393,385,380,370,0
+1,315.96,392,385,381,371,0
+Generation,Mean,Best,ThirdQuartile,Median,FirstQuartile,Worst
+0,313.79,392,385,381,375,0
