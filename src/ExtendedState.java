@@ -1,5 +1,6 @@
 import java.util.stream.IntStream;
 import java.util.Arrays;
+import javafx.util.Pair;
 
 public class ExtendedState extends State {
 
@@ -128,6 +129,49 @@ public class ExtendedState extends State {
         well *= wellParam;
 
         return cleared + hole + rowTransition + columnTransition + well;
+    }
+
+    /** 
+        Integer value is the number of dead moves (leading to end).
+        Double value is the total values of all non-dead moves.
+    */
+    public Pair<Integer, Double> calculateValueWithLookahead(double[] gene) {
+        int deadMoves = 0;
+        double totalValue = 0;
+        ExtendedState clonedState = new ExtendedState(this);
+
+        for (int i = 0;  i < N_PIECES;  i++) {
+            clonedState.setNextPiece(i);
+
+            // Find best move if the next piece is i
+            double tempBestValue = -Double.MAX_VALUE;
+            int tempBestMove = -1;
+
+            for (int move = 0;  move < clonedState.legalMoves().length;  move++) {
+                ExtendedState lookAheadState = new ExtendedState(clonedState);
+                lookAheadState.makeMove(move);
+
+                if (lookAheadState.hasLost()) {
+                    continue;
+                }
+
+                double value = lookAheadState.calculateValue(gene);
+                if (value > tempBestValue) {
+                    tempBestValue = value;
+                    tempBestMove = move;
+                }
+            }
+
+            if (tempBestMove == -1) {
+                deadMoves++;
+            } else {
+                totalValue += tempBestValue;
+            }
+        }
+
+        totalValue = calculateValue(gene);
+        deadMoves = 0;
+        return new Pair<>(deadMoves, totalValue);
     }
 
 }

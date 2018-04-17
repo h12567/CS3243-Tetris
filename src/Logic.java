@@ -1,6 +1,8 @@
 import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.IntStream;
+import javafx.util.Pair;
+import java.util.Random;
 
 public class Logic {
 
@@ -12,7 +14,7 @@ public class Logic {
         private State newState;
         private int move;
 
-        private double value;
+        private Pair<Integer, Double> value;
         public int[] top;
         public int[][] field;
 
@@ -32,7 +34,7 @@ public class Logic {
             this.move = move;
             this.gene = gene;
 
-            value = Integer.MIN_VALUE;
+            value = new Pair<>(Integer.MIN_VALUE, -Double.MAX_VALUE);
         }
 
 
@@ -42,7 +44,7 @@ public class Logic {
             }
 
             ExtendedState eS = new ExtendedState(s);
-            value = eS.calculateValue(gene);
+            value = eS.calculateValueWithLookahead(gene);
         }
 
         public void run() {
@@ -53,7 +55,7 @@ public class Logic {
 
     public static int getBestMove(State s, int[][] legalMoves, double[] gene) {
         int bestMove = 0;
-        double bestResult = Integer.MIN_VALUE;
+       Pair<Integer, Double> bestResult = new Pair<>(Integer.MAX_VALUE, -Double.MAX_VALUE);
 
         Helper helpers[] = new Helper[legalMoves.length];
         Thread threads[] = new Thread[legalMoves.length];
@@ -68,7 +70,8 @@ public class Logic {
             for (int i = 0; i < legalMoves.length; i++) {
                 threads[i].join();
 
-                if (helpers[i].value > bestResult) {
+                if (helpers[i].value.getKey() < bestResult.getKey() 
+                    || (helpers[i].value.getKey() == bestResult.getKey() && helpers[i].value.getValue() > bestResult.getValue())) {
                     bestResult = helpers[i].value;
                     bestMove = i;
                 }

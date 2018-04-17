@@ -19,20 +19,26 @@ public class PlayerSkeleton {
             t = Integer.parseInt(args[0]);
         }
 
+long startTime = System.nanoTime();
+
         State s = new State();
-        new TFrame(s);
+        // new TFrame(s);
         PlayerSkeleton p = new PlayerSkeleton();
         while (!s.hasLost()) {
             s.makeMove(p.pickMove(s, s.legalMoves()));
             // s.draw();
             // s.drawNext(0, 0);
-            // try {
-            //     Thread.sleep(t);
-            // } catch (InterruptedException e) {
-            //     e.printStackTrace();
-            // }
+            try {
+                Thread.sleep(t);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         System.out.println("You have completed " + s.getRowsCleared() + " rows.");
+long endTime   = System.nanoTime();
+long totalTime = endTime - startTime;
+double seconds = (double)totalTime / 1000000000.0;
+System.out.println("Time taken: " + seconds);
     }
 
 }
