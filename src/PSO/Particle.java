@@ -58,8 +58,8 @@ public class Particle {
 		            } else {
 		                break;
 		            }
-	        		score += s.getRowsCleared();
 	        	}
+	        	score += s.getRowsCleared();
 	        }
 
 	        score /= Config.TESTS_PER_GENERATION;
