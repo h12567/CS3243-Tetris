@@ -8,9 +8,9 @@ public class Particle {
 	double[] bestWeights = new double[Config.NO_OF_FEATURES];
 	double bestScore;
 	double[] v = new double[Config.NO_OF_FEATURES];
-	double INERTIA = 0.7;
-	double C1 = 2.0;
-	double C2 = 2.0;
+	double INERTIA = 0.729;
+	double C1 = 2.05;
+	double C2 = 2.05;
 
 	public Particle(double[] weights) {
 		System.arraycopy(weights, 0, this.currentWeights, 0, weights.length);
@@ -19,16 +19,18 @@ public class Particle {
 
 		random = new Random();
 		for(int i = 0; i < v.length; i++) {
-			v[i] = random.nextDouble() * 2.0 - 1.0;
+			v[i] = random.nextDouble() * 40.0 - 20.0;
 		}
 	}
 
 	public Callable<Pair> playGame(double[] globalBestWeights) {
 		random = new Random();
-		double constant_ind = random.nextDouble();
-        double constant_global = random.nextDouble();
+		double constant_ind;
+        double constant_global;
 
         for(int i = 0; i < v.length; i++) {
+        	constant_ind = random.nextDouble();
+        	constant_global = random.nextDouble();
             v[i] = INERTIA * v[i]
                    + constant_ind * C1 * (bestWeights[i] - currentWeights[i])
                    + constant_global * C2 * (globalBestWeights[i] - currentWeights[i]);

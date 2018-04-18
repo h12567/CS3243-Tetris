@@ -80,15 +80,17 @@ public class ParticleSwarmTrain {
 	}
 
 	public static void write() throws IOException{
-		FileWriter swarmWriter = new FileWriter("swarm.txt", false);
+		FileWriter swarmWriter = new FileWriter("swarm.txt", true);
         PrintWriter swarmPrintWriter = new PrintWriter(swarmWriter);
 
         for (int j = 0; j < Config.NO_OF_FEATURES; j++) {
+        	System.out.println(globalBest[j]);
             swarmPrintWriter.print(globalBest[j] + " ");
         }
         swarmPrintWriter.print("\n");
 
         System.out.println("THE BEST SCORE SO FAR: " + globalBestScore);
+
         swarmPrintWriter.flush();
         swarmPrintWriter.close();
 	}
