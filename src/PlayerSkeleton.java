@@ -1,7 +1,6 @@
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
-import java.awt.event.KeyEvent;
-import java.util.concurrent.CountDownLatch;
+import java.io.File;
+import java.io.IOException;
+import java.util.Scanner;
 
 public class PlayerSkeleton {
 
@@ -99,7 +98,7 @@ public class PlayerSkeleton {
     }
 
     private double landingHeightParam = -4.500158825082766;
-    private double rowsClearedParam = -3.4181268101392694;
+    private double rowsClearedParam = 3.4181268101392694;
     private double rowTransitionParam = -3.2178882868487753;
     private double colTransitionParam = -9.348695305445199;
     private double holesParam = -7.899265427351652;
@@ -121,19 +120,19 @@ public class PlayerSkeleton {
         double wellSum = getWellSum(s, next, orient, slot);
 
 //        System.out.println(
-//                landingHeight + "\t\t" + rowsCleared + "\t\t" + rowTransition + "\t\t"
+//                landingHeight + "\t" + rowsCleared + "\t" + rowTransition + "\t"
 //                        + colTransition
-//                        + "\t\t" + holes + "\t\t" + wellSum);
-//        System.out.println(
-//                landingHeight * 10000000000.0 + rowsCleared * 100000000 + rowTransition * 1000000
-//                        + colTransition * 10000 + holes * 100 + wellSum);
-
+//                        + "\t" + holes + "\t" + wellSum + "\t"
+//                        + (landingHeight * 10000000000.0 + rowsCleared * 100000000 + rowTransition * 1000000 + colTransition * 10000 + holes * 100 + wellSum));
         return landingHeight * landingHeightParam +
                 rowsCleared * rowsClearedParam +
                 rowTransition * rowTransitionParam +
                 colTransition * colTransitionParam +
                 holes * holesParam +
                 wellSum * wellSumParam;
+//        System.out.println(
+//                landingHeight * 10000000000.0 + rowsCleared * 100000000 + rowTransition * 1000000
+//                        + colTransition * 10000 + holes * 100 + wellSum);
     }
 
     public double getLandingHeight(State s, StateClone next, int orient, int slot) {
@@ -226,7 +225,7 @@ public class PlayerSkeleton {
             if (next.field[i][0] == 0 && next.field[i][1] > 0) {
                 wellSum += 1;
                 for (int k = i - 1; k >= 0; k--) {
-                    if (next.field[k][0] != 0) {
+                    if (next.field[k][0] == 0) {
                         wellSum += 1;
                     } else {
                         break;
@@ -253,6 +252,7 @@ public class PlayerSkeleton {
     // legalMoves[a][b], a is the index of the legal move
     // b = ORIENT is the orient, b = SLOT is the slot
     public int pickMove(State s, int[][] legalMoves) {
+//        System.out.println("=========================================================");
         double bestHeuristic = -Double.MAX_VALUE;
         int bestMove = 0;
 
@@ -268,32 +268,64 @@ public class PlayerSkeleton {
     }
 
     public static void main(String[] args) {
+
+//        int[] sequence = null;
+//        File file = new File("seq");
+//        Scanner sc = null;
+//
+//        try {
+//            sc = new Scanner(file);
+//            int N = sc.nextInt();
+//            sequence = new int[N];
+//            for (int i = 0; i < N; i++) {
+//                sequence[i] = sc.nextInt();
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } finally {
+//            if (sc != null) {
+//                sc.close();
+//            }
+//        }
+//
+//        int t = 100;
+//        if (args.length == 1) {
+//            t = Integer.parseInt(args[0]);
+//        }
+
         State s = new State();
-        new TFrame(s);
+//        int i = 0;
+//        s.nextPiece = 3;
+//        new TFrame(s);
         PlayerSkeleton p = new PlayerSkeleton();
         while (!s.hasLost()) {
             s.makeMove(p.pickMove(s, s.legalMoves()));
-            s.draw();
-            s.drawNext(0, 0);
-            try {
-                Thread.sleep(300);
-                final CountDownLatch latch = new CountDownLatch(1);
-                KeyEventDispatcher dispatcher = new KeyEventDispatcher() {
-                    public boolean dispatchKeyEvent(KeyEvent e) {
-                        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-                            latch.countDown();
-                        }
-                        return false;
-                    }
-                };
-                KeyboardFocusManager.getCurrentKeyboardFocusManager()
-                        .addKeyEventDispatcher(dispatcher);
-                latch.await();  // current thread waits here until countDown() is called
-                KeyboardFocusManager.getCurrentKeyboardFocusManager()
-                        .removeKeyEventDispatcher(dispatcher);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            if (s.getRowsCleared() % 100000 == 0) {
+                System.out.println("Cleared " + s.getRowsCleared() + " rows.");
             }
+//            i++;
+//            s.nextPiece = 3;
+//            s.draw();
+//            s.drawNext(0, 0);
+//            try {
+//                Thread.sleep(300);
+//                final CountDownLatch latch = new CountDownLatch(1);
+//                KeyEventDispatcher dispatcher = new KeyEventDispatcher() {
+//                    public boolean dispatchKeyEvent(KeyEvent e) {
+//                        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+//                            latch.countDown();
+//                        }
+//                        return false;
+//                    }
+//                };
+//                KeyboardFocusManager.getCurrentKeyboardFocusManager()
+//                        .addKeyEventDispatcher(dispatcher);
+//                latch.await();  // current thread waits here until countDown() is called
+//                KeyboardFocusManager.getCurrentKeyboardFocusManager()
+//                        .removeKeyEventDispatcher(dispatcher);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
         }
         System.out.println("You have completed " + s.getRowsCleared() + " rows.");
     }
