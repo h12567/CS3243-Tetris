@@ -44,6 +44,7 @@ public class State {
 	//possible orientations for a given piece type
 	protected static int[] pOrients = {1,2,4,4,4,2,2};
 	
+	public double[] pieceProb = {0.12, 0.12, 0.12, 0.12, 0.12, 0.2, 0.2};
 	//the next several arrays define the piece vocabulary in detail
 	//width of the pieces [piece ID][orientation]
 	protected static int[][] pWidth = {
@@ -188,7 +189,15 @@ public class State {
 	
 	//random integer, returns 0-6
 	private int randomPiece() {
-		return (int)(Math.random()*N_PIECES);
+		// double val = Math.random();
+		// for(int i = 0; i < pieceProb.length; i++) {
+		// 	val -= pieceProb[i];
+		// 	if(val <= 0) {
+		// 		return i;
+		// 	}
+		// }
+		// return 0;
+		return (int)(Math.random() * N_PIECES);
 	}
 	
 

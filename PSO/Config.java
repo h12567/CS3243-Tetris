@@ -3,11 +3,11 @@ public class Config {
     // public static final int POPULATION = 1000;
     public static final int POPULATION = 100;
     public static final int NUMBER_OF_GENERATIONS = 5000;
-    public static final int TURN_NUMBER_LIMIT = 5000000;    // Set to -1 for unlimited
+    public static final int TURN_NUMBER_LIMIT = 1000000;    // Set to -1 for unlimited
     // public static final int TESTS_PER_GENERATION = 10;
     public static final int TESTS_PER_GENERATION = 5;
     public static final int NO_OF_THREADS = 1;        // MUST DIVIDE POPULATION!
-    public static final boolean NEW_TRAINING_SESSION = false;
+    public static final boolean NEW_TRAINING_SESSION = true;
     public static final int STARTING_GENERATION = 0;
 
     // BREEDER SETTINGS
