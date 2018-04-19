@@ -1,11 +1,12 @@
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
+import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 
 public class PlayerSkeleton {
 
-    private double[] gene = {-0.16423861,-0.16423861,0.249497149,-0.57658604,-0.123561369,-0.123561369,-0.234881266,-0.68238335};
+    private double[] gene = {-0.11053540341073291,-0.36883615584872065,0.1804241717873332,-0.625281961800296,-0.18321114527215862,-0.3366977548511917,-0.20063655121632362,-0.4909426378466667};
 
     //implement this function to have a working system
     public int pickMove(State s, int[][] legalMoves) {
