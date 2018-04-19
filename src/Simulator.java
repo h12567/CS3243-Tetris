@@ -20,8 +20,7 @@ public class Simulator implements Runnable {
     public void run() {
         State s = new State();
         while (!s.hasLost()) {
-            if (s.getTurnNumber() == -1
-                    || (s.getTurnNumber() != -1 && s.getTurnNumber() < Config.TURN_NUMBER_LIMIT)) {
+            if (s.getTurnNumber() < Config.TURN_NUMBER_LIMIT) {
                 s.makeMove(pickMove(s, s.legalMoves()));
             } else {
                 break;
