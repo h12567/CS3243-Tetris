@@ -36,15 +36,14 @@ public class Trainer {
             nce.writeLah();
         }
 
-        int[] fitnessScores = new int[Config.POPULATION];
-
         final int NO_OF_THREADS = 10;
 
         // Create the threads
         Simulator[] myRunnables = new Simulator[NO_OF_THREADS];
         Thread threads[] = new Thread[NO_OF_THREADS];
 
-        for (int g = 1; g <= Config.GENERATIONS; g++) {
+        for (int g = Config.STARTING_GENERATION; g <= Config.GENERATIONS; g++) {
+			int[] fitnessScores = new int[Config.POPULATION];
             for (int z = 0; z < Config.POPULATION * Config.TESTS / NO_OF_THREADS; z++) {
                 // Thread 0 1 2 3 ... TESTS - 1 is gene 0, and so on
                 for (int i = 0; i < NO_OF_THREADS; i++) {

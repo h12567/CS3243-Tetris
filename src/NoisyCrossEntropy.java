@@ -32,7 +32,7 @@ public class NoisyCrossEntropy {
     }
 
     private double getNoise() {
-        return Math.exp(- (double) generation / Math.PI);
+        return Math.exp(- (double) generation / (10.0 * Math.PI));
     }
 
     private void initialize(Gene[] genesArray, int generation) {

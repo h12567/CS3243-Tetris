@@ -1,6 +1,6 @@
 public class Logic {
 
-    static class Helper {
+    static class Helper implements Runnable {
 
         private State initialState;
         private State newState;
@@ -241,11 +241,21 @@ public class Logic {
         int bestMove = 0;
         double bestResult = Integer.MIN_VALUE;
 
+        Thread threads[] = new Thread[legalMoves.length];
         Helper helpers[] = new Helper[legalMoves.length];
 
         for (int i = 0; i < legalMoves.length; i++) {
             helpers[i] = new Helper(s, i, gene, legalMoves);
-            helpers[i].run();
+            threads[i] = new Thread(helpers[i]);
+            threads[i].run();
+        }
+
+        for (int i = 0; i < legalMoves.length; i++) {
+            try {
+                threads[i].join();
+            } catch (InterruptedException e) {
+                System.out.println("THE FUCK?");
+            }
         }
 
         for (int i = 0; i < legalMoves.length; i++) {
