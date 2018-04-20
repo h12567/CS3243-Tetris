@@ -24,6 +24,7 @@ public class ParticleSwarmTrain {
 	     	genes = new double[Config.POPULATION][Config.NO_OF_FEATURES];
 			// If is first generation, randomly generate genes
 			if (Config.NEW_TRAINING_SESSION) {
+				System.out.println("WTF WHY HERE");
 				Random rand = new Random();
 				for (int i = 0; i < Config.POPULATION; i++) {
 					for (int j = 0; j < Config.NO_OF_FEATURES; j++) {																																						
@@ -32,9 +33,11 @@ public class ParticleSwarmTrain {
 					swarm[i] = new Particle(genes[i]);
 				}
 			} else {
+				System.out.println("HERE HAHA");
+
 				// If not first generation, get data from "genes.txt"
 				Scanner scan;
-				File file = new File("swarm.txt");
+				File file = new File("swarmInput.txt");
 				scan = new Scanner(file);
 				for (int i = 0; i < Config.POPULATION; i++) {
 					for (int j = 0; j < Config.NO_OF_FEATURES; j++) {
@@ -84,7 +87,7 @@ public class ParticleSwarmTrain {
         PrintWriter swarmPrintWriter = new PrintWriter(swarmWriter);
 
         for (int j = 0; j < Config.NO_OF_FEATURES; j++) {
-        	System.out.println(globalBest[j]);
+        	swarmPrintWriter.print("SCORE " + globalBestScore + " ");
             swarmPrintWriter.print(globalBest[j] + " ");
         }
         swarmPrintWriter.print("\n");
@@ -97,6 +100,7 @@ public class ParticleSwarmTrain {
 
 	public static void main(String[] args) {
 		try {
+			System.out.println("AAA");
 			initializeSwarm();
 			for(int i = 0; i < Config.NUMBER_OF_GENERATIONS; i++) {
 				run();

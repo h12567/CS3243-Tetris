@@ -6,7 +6,7 @@ public class Config {
     public static final int TURN_NUMBER_LIMIT = 5000000;    // Set to -1 for unlimited
     // public static final int TESTS_PER_GENERATION = 10;
     public static final int TESTS_PER_GENERATION = 5;
-    public static final int NO_OF_THREADS = 1;        // MUST DIVIDE POPULATION!
+    public static final int NO_OF_THREADS = 200;        // MUST DIVIDE POPULATION!
     public static final boolean NEW_TRAINING_SESSION = false;
     public static final int STARTING_GENERATION = 0;
 
@@ -18,7 +18,7 @@ public class Config {
     public static final double MUTATION_AMOUNT = 0.1; // The max amount of mutation allowed
 
     public static final int[] FEATURE_TYPE = {
-        1, -1, -1, -1, -1, -1, -1, -1
+        -1, -1, 1, -1, -1, -1, -1, -1
     };
 
     // NOT A SETTING

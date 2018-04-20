@@ -189,15 +189,15 @@ public class State {
 	
 	//random integer, returns 0-6
 	private int randomPiece() {
-		// double val = Math.random();
-		// for(int i = 0; i < pieceProb.length; i++) {
-		// 	val -= pieceProb[i];
-		// 	if(val <= 0) {
-		// 		return i;
-		// 	}
-		// }
-		// return 0;
-		return (int)(Math.random() * N_PIECES);
+		double val = Math.random();
+		for(int i = 0; i < pieceProb.length; i++) {
+			val -= pieceProb[i];
+			if(val <= 0) {
+				return i;
+			}
+		}
+		return 0;
+		// return (int)(Math.random() * N_PIECES);
 	}
 	
 
