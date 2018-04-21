@@ -1,9 +1,15 @@
-import java.io.File;
-import java.io.IOException;
-import java.util.Scanner;
-
 public class PlayerSkeleton {
 
+    private double landingBottomParam = -0.16323974806803318;
+    private double landingTopParam = -0.21318127671949377;
+    private double linesClearedParam = 0.14111723105868468;
+    private double holesParam = -0.574190533892977;
+    private double outerWellSumParam = -0.27427659655036474;
+    private double innerWellSumParam = -0.20417815295663141;
+    private double rowTransitionParam = -0.17740726106192445;
+    private double colTransitionParam = -0.6556736840497965;
+
+    // Clone a state to simulate moves
     class StateClone extends State {
 
         private int turn;
@@ -97,13 +103,6 @@ public class PlayerSkeleton {
         }
     }
 
-    private double landingHeightParam = -4.500158825082766;
-    private double rowsClearedParam = 3.4181268101392694;
-    private double rowTransitionParam = -3.2178882868487753;
-    private double colTransitionParam = -9.348695305445199;
-    private double holesParam = -7.899265427351652;
-    private double wellSumParam = -3.3855972247263626;
-
     // Evaluate the heuristic
     public double evaluate(State s, int orient, int slot) {
         StateClone next = new StateClone(s);
@@ -112,44 +111,40 @@ public class PlayerSkeleton {
             return -Double.MAX_VALUE;
         }
 
-        double landingHeight = getLandingHeight(s, next, orient, slot);
-        double rowsCleared = getRowsCleared(s, next, orient, slot);
-        double rowTransition = getRowTransition(s, next, orient, slot);
-        double colTransition = getColTransition(s, next, orient, slot);
+        double landingBottom = getLandingBottom(s, next, orient, slot);
+        double landingTop = landingBottom + (double) State.getpHeight()[s.nextPiece][orient];
+        double linesCleared = getRowsCleared(s, next, orient, slot);
         double holes = getHoles(s, next, orient, slot);
-        double wellSum = getWellSum(s, next, orient, slot);
+        double outerWellSum = getOuterWellSum(s, next, orient, slot);
+        double innerWellSum = getInnerWellSum(s, next, orient, slot);
+        double rowTransition = getRowTransitions(s, next, orient, slot);
+        double colTransition = getColTransitions(s, next, orient, slot);
 
-//        System.out.println(
-//                landingHeight + "\t" + rowsCleared + "\t" + rowTransition + "\t"
-//                        + colTransition
-//                        + "\t" + holes + "\t" + wellSum + "\t"
-//                        + (landingHeight * 10000000000.0 + rowsCleared * 100000000 + rowTransition * 1000000 + colTransition * 10000 + holes * 100 + wellSum));
-        return landingHeight * landingHeightParam +
-                rowsCleared * rowsClearedParam +
-                rowTransition * rowTransitionParam +
-                colTransition * colTransitionParam +
+        return landingBottom * landingBottomParam +
+                landingTop * landingTopParam +
+                linesCleared * linesClearedParam +
                 holes * holesParam +
-                wellSum * wellSumParam;
-//        System.out.println(
-//                landingHeight * 10000000000.0 + rowsCleared * 100000000 + rowTransition * 1000000
-//                        + colTransition * 10000 + holes * 100 + wellSum);
+                outerWellSum * outerWellSumParam +
+                innerWellSum * innerWellSumParam +
+                rowTransition * rowTransitionParam +
+                colTransition * colTransitionParam;
     }
 
-    public double getLandingHeight(State s, StateClone next, int orient, int slot) {
+    public double getLandingBottom(State s, StateClone next, int orient, int slot) {
         int height = s.getTop()[slot] - State.getpBottom()[s.nextPiece][orient][0];
         //for each column beyond the first in the piece
         for (int c = 1; c < State.getpWidth()[s.nextPiece][orient]; c++) {
             height = Math
                     .max(height, s.getTop()[slot + c] - State.getpBottom()[s.nextPiece][orient][c]);
         }
-        return (double) height + (double) (State.getpHeight()[s.nextPiece][orient] - 1) / 2;
+        return (double) height;
     }
 
     public double getRowsCleared(State s, StateClone next, int orient, int slot) {
         return (double) next.cleared - s.getRowsCleared();
     }
 
-    public double getRowTransition(State s, StateClone next, int orient, int slot) {
+    public double getRowTransitions(State s, StateClone next, int orient, int slot) {
         int rowTransitions = 0;
         // For each row
         for (int i = 0; i < State.ROWS - 1; i++) {
@@ -172,7 +167,7 @@ public class PlayerSkeleton {
         return (double) rowTransitions;
     }
 
-    public double getColTransition(State s, StateClone next, int orient, int slot) {
+    public double getColTransitions(State s, StateClone next, int orient, int slot) {
         int colTransitions = 0;
         // For each column
         for (int j = 0; j < State.COLS; j++) {
@@ -203,16 +198,44 @@ public class PlayerSkeleton {
         return (double) numHoles;
     }
 
-    public double getWellSum(State s, StateClone next, int orient, int slot) {
-        int wellSum = 0;
+    public double getOuterWellSum(State s, StateClone next, int orient, int slot) {
+        int outerWellSum = 0;
         // Count the middle columns
         for (int j = 1; j < State.COLS - 1; j++) {
-            for (int i = State.ROWS - 2; i >= 0; i--) {
-                if (next.field[i][j] == 0 && next.field[i][j - 1] > 0 && next.field[i][j + 1] > 0) {
-                    wellSum += 1;
+            for (int i = State.ROWS - 2; i >= next.top[j]; i--) {
+                if (next.field[i][j] == 0 && next.field[i][j - 1] > 0
+                        && next.field[i][j + 1] > 0) {
+                    outerWellSum += (i - next.top[j] + 1);
+                }
+            }
+        }
+        // Count the leftmost column
+        for (int i = State.ROWS - 2; i >= next.top[0]; i--) {
+            if (next.field[i][0] == 0 && next.field[i][1] > 0) {
+                outerWellSum += (i - next.top[0] + 1);
+            }
+        }
+        // Count the rightmost column
+        for (int i = State.ROWS - 2; i >= next.top[State.COLS - 1]; i--) {
+            if (next.field[i][State.COLS - 1] == 0
+                    && next.field[i][State.COLS - 2] > 0) {
+                outerWellSum += (i - next.top[State.COLS - 1] + 1);
+            }
+        }
+        return outerWellSum;
+    }
+
+    public double getInnerWellSum(State s, StateClone next, int orient, int slot) {
+        int innerWellSum = 0;
+        // Count the middle columns
+        for (int j = 1; j < State.COLS - 1; j++) {
+            for (int i = next.top[j] - 1; i >= 0; i--) {
+                if (next.field[i][j] == 0 && next.field[i][j - 1] > 0
+                        && next.field[i][j + 1] > 0) {
+                    innerWellSum += 1;
                     for (int k = i - 1; k >= 0; k--) {
                         if (next.field[k][j] == 0) {
-                            wellSum += 1;
+                            innerWellSum += 1;
                         } else {
                             break;
                         }
@@ -221,12 +244,12 @@ public class PlayerSkeleton {
             }
         }
         // Count the leftmost column
-        for (int i = State.ROWS - 2; i >= 0; i--) {
+        for (int i = next.top[0] - 1; i >= 0; i--) {
             if (next.field[i][0] == 0 && next.field[i][1] > 0) {
-                wellSum += 1;
+                innerWellSum += 1;
                 for (int k = i - 1; k >= 0; k--) {
                     if (next.field[k][0] == 0) {
-                        wellSum += 1;
+                        innerWellSum += 1;
                     } else {
                         break;
                     }
@@ -234,25 +257,26 @@ public class PlayerSkeleton {
             }
         }
         // Count the rightmost column
-        for (int i = State.ROWS - 2; i >= 0; i--) {
-            if (next.field[i][State.COLS - 1] == 0 && next.field[i][State.COLS - 2] > 0) {
-                wellSum += 1;
+        for (int i = next.top[State.COLS - 1] - 1; i >= 0; i--) {
+            if (next.field[i][State.COLS - 1] == 0
+                    && next.field[i][State.COLS - 2] > 0) {
+                innerWellSum += 1;
                 for (int k = i - 1; k >= 0; k--) {
                     if (next.field[k][State.COLS - 1] == 0) {
-                        wellSum += 1;
+                        innerWellSum += 1;
                     } else {
                         break;
                     }
                 }
             }
         }
-        return wellSum;
+        return innerWellSum;
     }
+
 
     // legalMoves[a][b], a is the index of the legal move
     // b = ORIENT is the orient, b = SLOT is the slot
     public int pickMove(State s, int[][] legalMoves) {
-//        System.out.println("=========================================================");
         double bestHeuristic = -Double.MAX_VALUE;
         int bestMove = 0;
 
@@ -268,66 +292,24 @@ public class PlayerSkeleton {
     }
 
     public static void main(String[] args) {
-
-//        int[] sequence = null;
-//        File file = new File("seq");
-//        Scanner sc = null;
-//
-//        try {
-//            sc = new Scanner(file);
-//            int N = sc.nextInt();
-//            sequence = new int[N];
-//            for (int i = 0; i < N; i++) {
-//                sequence[i] = sc.nextInt();
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } finally {
-//            if (sc != null) {
-//                sc.close();
-//            }
-//        }
-//
-//        int t = 100;
-//        if (args.length == 1) {
-//            t = Integer.parseInt(args[0]);
-//        }
-
-        State s = new State();
-//        int i = 0;
-//        s.nextPiece = 3;
+        for (int i = 0; i < 100; i++) {
+            State s = new State();
 //        new TFrame(s);
-        PlayerSkeleton p = new PlayerSkeleton();
-        while (!s.hasLost()) {
-            s.makeMove(p.pickMove(s, s.legalMoves()));
-            if (s.getRowsCleared() % 100000 == 0) {
-                System.out.println("Cleared " + s.getRowsCleared() + " rows.");
-            }
-//            i++;
-//            s.nextPiece = 3;
+            PlayerSkeleton p = new PlayerSkeleton();
+            while (!s.hasLost()) {
+                if (s.getRowsCleared() % 100000 == 0) {
+                    System.out.println("Cleared " + s.getRowsCleared());
+                }
+                s.makeMove(p.pickMove(s, s.legalMoves()));
 //            s.draw();
 //            s.drawNext(0, 0);
 //            try {
-//                Thread.sleep(300);
-//                final CountDownLatch latch = new CountDownLatch(1);
-//                KeyEventDispatcher dispatcher = new KeyEventDispatcher() {
-//                    public boolean dispatchKeyEvent(KeyEvent e) {
-//                        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-//                            latch.countDown();
-//                        }
-//                        return false;
-//                    }
-//                };
-//                KeyboardFocusManager.getCurrentKeyboardFocusManager()
-//                        .addKeyEventDispatcher(dispatcher);
-//                latch.await();  // current thread waits here until countDown() is called
-//                KeyboardFocusManager.getCurrentKeyboardFocusManager()
-//                        .removeKeyEventDispatcher(dispatcher);
+//                Thread.sleep(t);
 //            } catch (InterruptedException e) {
 //                e.printStackTrace();
 //            }
+            }
+            System.out.println("You have completed " + s.getRowsCleared() + " rows.");
         }
-        System.out.println("You have completed " + s.getRowsCleared() + " rows.");
     }
-
 }
