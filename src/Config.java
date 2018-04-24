@@ -23,4 +23,5 @@ public class Config {
 
     // NOT A SETTING
     public static final int NO_OF_FEATURES = 5;
+
 }
